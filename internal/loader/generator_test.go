@@ -28,6 +28,26 @@ func TestBuildGeneratedRequest(t *testing.T) {
 	}
 }
 
+func TestBuildGeneratedRequestStartSequence(t *testing.T) {
+	request, err := BuildGeneratedRequest(GeneratorOptions{
+		Brokers:       []string{"localhost:9092"},
+		Topic:         "demo.events",
+		Count:         2,
+		StartSequence: 10,
+	})
+	if err != nil {
+		t.Fatalf("BuildGeneratedRequest returned error: %v", err)
+	}
+
+	firstKey, ok := request.Messages[0].Key.(string)
+	if !ok {
+		t.Fatalf("unexpected key type: %T", request.Messages[0].Key)
+	}
+	if firstKey == "" || request.Messages[0].Time == nil {
+		t.Fatal("expected generated key and time")
+	}
+}
+
 func TestBuildGeneratedRequestRejectsMissingBrokers(t *testing.T) {
 	_, err := BuildGeneratedRequest(GeneratorOptions{
 		Topic: "demo.events",

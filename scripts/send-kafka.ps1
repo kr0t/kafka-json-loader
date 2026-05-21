@@ -9,6 +9,10 @@ param(
     [string]$KeyPrefix = "msg",
     [string]$EventType = "generated",
     [string]$Source = "kafka-json-loader",
+    [switch]$Continuous,
+    [int]$Rate = 0,
+    [string]$Interval,
+    [string]$Duration,
     [switch]$Ssl,
     [string]$SslServerName,
     [string]$SslCaFile,
@@ -33,6 +37,19 @@ try {
         "-event-type", $EventType,
         "-source", $Source
     )
+
+    if ($Continuous) {
+        $args += @("-continuous")
+    }
+    if ($Rate -gt 0) {
+        $args += @("-rate", $Rate)
+    }
+    if ($Interval) {
+        $args += @("-interval", $Interval)
+    }
+    if ($Duration) {
+        $args += @("-duration", $Duration)
+    }
 
     if ($Ssl) {
         $args += @("-ssl")

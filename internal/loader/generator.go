@@ -16,6 +16,7 @@ type GeneratorOptions struct {
 	RequiredAcks       string
 	Compression        string
 	Count              int
+	StartSequence      int
 	KeyPrefix          string
 	EventType          string
 	Source             string
@@ -65,6 +66,9 @@ func BuildGeneratedRequest(options GeneratorOptions) (*Request, error) {
 	if options.Count <= 0 {
 		options.Count = 1
 	}
+	if options.StartSequence <= 0 {
+		options.StartSequence = 1
+	}
 	if strings.TrimSpace(options.KeyPrefix) == "" {
 		options.KeyPrefix = "msg"
 	}
@@ -106,32 +110,33 @@ func BuildGeneratedRequest(options GeneratorOptions) (*Request, error) {
 	now := time.Now().UTC()
 
 	for i := 0; i < options.Count; i++ {
+		sequence := options.StartSequence + i
 		generatedAt := now.Add(time.Duration(i) * time.Millisecond)
-		messageID := fmt.Sprintf("%s-%d-%06d", options.KeyPrefix, generatedAt.Unix(), i+1)
+		messageID := fmt.Sprintf("%s-%d-%06d", options.KeyPrefix, generatedAt.Unix(), sequence)
 
 		value := generatedValue{
 			ID:          messageID,
-			Sequence:    i + 1,
+			Sequence:    sequence,
 			EventType:   options.EventType,
 			Source:      options.Source,
 			GeneratedAt: generatedAt.Format(time.RFC3339Nano),
 			Customer: generatedParty{
-				ID:    1000 + i + 1,
-				Name:  fmt.Sprintf("Customer %d", i+1),
-				Email: fmt.Sprintf("customer%d@example.local", i+1),
+				ID:    1000 + sequence,
+				Name:  fmt.Sprintf("Customer %d", sequence),
+				Email: fmt.Sprintf("customer%d@example.local", sequence),
 				Tags:  []string{"generated", "windows", "kafka"},
 			},
 			Order: generatedOrder{
-				Number:   fmt.Sprintf("ORD-%06d", i+1),
+				Number:   fmt.Sprintf("ORD-%06d", sequence),
 				Currency: "RUB",
 				Amount:   generatedAmount(seededRand),
 				Items: []generatedOrderItem{
-					{SKU: fmt.Sprintf("SKU-%03d", (i%10)+1), Qty: 1 + i%3, Price: 499.90},
-					{SKU: fmt.Sprintf("SKU-%03d", ((i+1)%10)+1), Qty: 1, Price: 999.50},
+					{SKU: fmt.Sprintf("SKU-%03d", (sequence%10)+1), Qty: 1 + sequence%3, Price: 499.90},
+					{SKU: fmt.Sprintf("SKU-%03d", ((sequence+1)%10)+1), Qty: 1, Price: 999.50},
 				},
 			},
 			Flags: generatedFlags{
-				Priority: i%2 == 0,
+				Priority: sequence%2 == 1,
 				TestData: true,
 			},
 		}
@@ -141,7 +146,7 @@ func BuildGeneratedRequest(options GeneratorOptions) (*Request, error) {
 			"generator":    "kafka-json-loader",
 			"source":       options.Source,
 			"host":         hostname,
-			"sequence":     i + 1,
+			"sequence":     sequence,
 			"event-type":   options.EventType,
 		}
 
