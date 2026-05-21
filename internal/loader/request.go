@@ -48,6 +48,10 @@ func LoadRequest(path string) (*Request, error) {
 		return nil, fmt.Errorf("parse config %q: %w", path, err)
 	}
 
+	return validateRequest(&request)
+}
+
+func validateRequest(request *Request) (*Request, error) {
 	if len(request.Brokers) == 0 {
 		return nil, fmt.Errorf("brokers must contain at least one Kafka broker")
 	}
@@ -82,5 +86,5 @@ func LoadRequest(path string) (*Request, error) {
 		}
 	}
 
-	return &request, nil
+	return request, nil
 }
