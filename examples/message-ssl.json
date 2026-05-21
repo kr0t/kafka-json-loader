@@ -1,0 +1,28 @@
+{
+  "brokers": ["kafka01.example.local:9093", "kafka02.example.local:9093"],
+  "topic": "secure.events",
+  "clientId": "windows-loader",
+  "requiredAcks": "all",
+  "compression": "snappy",
+  "ssl": {
+    "enabled": true,
+    "serverName": "kafka01.example.local",
+    "caFile": ".\\certs\\ca.pem",
+    "certFile": ".\\certs\\client.pem",
+    "keyFile": ".\\certs\\client-key.pem",
+    "insecureSkipVerify": false
+  },
+  "messages": [
+    {
+      "key": "secure-key",
+      "value": {
+        "event": "tls-test",
+        "ok": true
+      },
+      "headers": {
+        "content-type": "application/json",
+        "transport": "tls"
+      }
+    }
+  ]
+}

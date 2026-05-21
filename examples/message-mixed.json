@@ -1,0 +1,39 @@
+{
+  "brokers": ["localhost:9092", "localhost:9093"],
+  "topic": "demo.raw",
+  "messages": [
+    {
+      "key": "plain-string-key",
+      "value": {
+        "type": "base64",
+        "data": "SGVsbG8sIEthZmthIQ=="
+      },
+      "headers": [
+        {
+          "key": "format",
+          "value": "base64"
+        },
+        {
+          "key": "binary-id",
+          "value": {
+            "type": "hex",
+            "data": "0a0b0c"
+          }
+        },
+        {
+          "key": "nullable",
+          "value": {
+            "type": "null"
+          }
+        }
+      ]
+    },
+    {
+      "key": null,
+      "value": true,
+      "headers": {
+        "content-type": "application/json"
+      }
+    }
+  ]
+}

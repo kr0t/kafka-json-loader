@@ -1,0 +1,34 @@
+{
+  "brokers": ["localhost:9092"],
+  "topic": "demo.events",
+  "clientId": "windows-loader",
+  "requiredAcks": "all",
+  "compression": "snappy",
+  "batchTimeoutMs": 1000,
+  "writeTimeoutMs": 10000,
+  "messages": [
+    {
+      "key": {
+        "type": "json",
+        "data": {
+          "entity": "order",
+          "id": 101
+        }
+      },
+      "value": {
+        "event": "created",
+        "amount": 1499.95,
+        "currency": "RUB",
+        "items": [
+          {"sku": "A-1", "qty": 1},
+          {"sku": "B-2", "qty": 2}
+        ]
+      },
+      "headers": {
+        "content-type": "application/json",
+        "source": "manual-loader",
+        "trace-id": "trace-001"
+      }
+    }
+  ]
+}
